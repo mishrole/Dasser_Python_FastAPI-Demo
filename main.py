@@ -19,6 +19,11 @@ app = FastAPI()
 # TODO: Move to /models
 # Models
 
+class Location(BaseModel):
+  city: str
+  state: str
+  country: str
+
 class User(BaseModel):
   id : Optional[str] = uuid.uuid4()
   first_name: str
@@ -104,6 +109,26 @@ def get_user(
   return {
     "user": next((user for user in users if user.id == user_id), None)
   }
+
+# Request Body (Validations)
+@app.put("/users/{user_id}")
+def update_user(
+  user_id: str = Path(
+    ...,
+    title = "ID of the user",
+    description = "This is the user ID",
+    # gt = 0
+  ),
+  user: User = Body(...),
+  location: Location = Body(...)
+):
+  # * Combine
+  results = user.dict()
+  results.update(location.dict())
+  # ! Unsupported by FastAPI
+  # user.dict() & location.dict()
+  return results
+
 
 # Run (with hot reloading)
 # uvicorn main:app --reload
