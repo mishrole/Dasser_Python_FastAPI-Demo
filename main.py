@@ -11,6 +11,8 @@ from fastapi import FastAPI, Body, Path, Query
 from starlette.responses import RedirectResponse
 from starlette.status import HTTP_303_SEE_OTHER
 
+import uuid
+
 # Instance of FastAPI
 app = FastAPI()
 
@@ -18,6 +20,7 @@ app = FastAPI()
 # Models
 
 class User(BaseModel):
+  id : Optional[str] = uuid.uuid4()
   first_name: str
   last_name: str
   age: int
@@ -92,15 +95,14 @@ def search_users(
 # Path Params (Validations)
 @app.get("/users/{user_id}")
 def get_user(
-  user_id: int = Path(
+  user_id: str = Path(
     ...,
-    gt = 0,
     title = "ID of the user",
     description = "This is the ID of the user. It's required"
   )
 ):
   return {
-    "user_id": user_id
+    "user": next((user for user in users if user.id == user_id), None)
   }
 
 # Run (with hot reloading)
