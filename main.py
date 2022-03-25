@@ -7,7 +7,7 @@ from typing import Optional, List, Dict
 from pydantic import BaseModel
 
 # Import Module
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, Query
 from starlette.responses import RedirectResponse
 from starlette.status import HTTP_303_SEE_OTHER
 
@@ -59,7 +59,16 @@ def list_users():
 
 @app.post("/users")
 def create_user(user: User = Body(...)): # ! with Body(...) model is Required
+  users.append(user)
   return user
+
+# Query Params (Validations)
+@app.get("/users/search")
+def search_users(
+  fullname: Optional[str] = Query(None, min_length=1, max_length=50, title="Full Name of the user", description="First name and Last name of the user"), 
+  age: int = Query(..., gt=0, lt=100, description="Age of the user") # ! (...) is Required (to test)
+):
+  return { fullname: age}
 
 # Run (with hot reloading)
 # uvicorn main:app --reload
