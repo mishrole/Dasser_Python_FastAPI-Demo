@@ -5,7 +5,7 @@ from typing import Optional, List, Dict
 from enum import Enum
 
 # Pydantic
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr, HttpUrl
 
 # Import Module
 from fastapi import FastAPI, Body, Path, Query
@@ -73,6 +73,8 @@ class User(BaseModel):
   )
   hair_color: Optional[HairColor] = Field(default = None)
   is_married : Optional[bool] = Field(default = None)
+  site_url: HttpUrl = Field(default = None)
+  email: EmailStr = Field(default = None)
 
 users = []
 
