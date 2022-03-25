@@ -118,7 +118,7 @@ def greetings():
   }
 
 @app.get("/greetings/{name}") # Path param
-def greetings_name(name: str):
+def greetings_name(name: str = Path(..., title="Name", example="Mitchell")):
   greeting = "Hello %s" % (name)
   return {
     "greetings": greeting
@@ -126,7 +126,7 @@ def greetings_name(name: str):
 
 @app.get("/greetings/{name}/repeat")
 def greetings_name_repeat(
-  name: str,
+  name: str = Path(..., title="Name", example="Mitchell"),
   repeat: int = 1
 ):
   repeated = ("Hello %s " % (name)) * repeat
@@ -154,14 +154,16 @@ def search_users(
     min_length = 1,
     max_length = 50,
     title = "Full Name of the user",
-    description = "This is the First name and Last name of the user. It's between 1 and 50 characters"
+    description = "This is the First name and Last name of the user. It's between 1 and 50 characters",
+    example = "Mitchell Rodriguez"
   ), 
   age: int = Query(
     ...,
     gt = 0,
     lt = 100,
     title = "Age of the user", # * Unsupported on Swagger UI, but works on Redoc
-    description = "This is the age of the user. It's required"
+    description = "This is the age of the user. It's required",
+    example = 25
   ) # ! (...) is Required (to test)
 ):
   return { fullname: age }
@@ -171,8 +173,9 @@ def search_users(
 def get_user(
   user_id: str = Path(
     ...,
-    title = "ID of the user",
-    description = "This is the ID of the user. It's required"
+    title = "ID of the user (UUID)",
+    description = "This is the ID of the user. It's required",
+    example = "5e9f8f8f-8f8f-8f8f-8f8f-8f8f8f8f8f8f"
   )
 ):
   return {
@@ -184,8 +187,9 @@ def get_user(
 def update_user(
   user_id: str = Path(
     ...,
-    title = "ID of the user",
+    title = "ID of the user (UUID)",
     description = "This is the user ID",
+    example = "5e9f8f8f-8f8f-8f8f-8f8f-8f8f8f8f8f8f"
     # gt = 0
   ),
   user: User = Body(...),
