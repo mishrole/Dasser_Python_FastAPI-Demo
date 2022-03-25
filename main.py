@@ -7,7 +7,7 @@ from typing import Optional, List, Dict
 from pydantic import BaseModel
 
 # Import Module
-from fastapi import FastAPI, Body, Query
+from fastapi import FastAPI, Body, Path, Query
 from starlette.responses import RedirectResponse
 from starlette.status import HTTP_303_SEE_OTHER
 
@@ -29,7 +29,10 @@ users = []
 
 @app.get("/") # Path
 def home():
-  return RedirectResponse(url="/greetings", status_code=HTTP_303_SEE_OTHER)
+  return RedirectResponse(
+    url="/greetings",
+    status_code=HTTP_303_SEE_OTHER
+  )
 
 @app.get("/greetings") # Path
 def greetings():
@@ -45,7 +48,10 @@ def greetings_name(name: str):
   }
 
 @app.get("/greetings/{name}/repeat")
-def greetings_name_repeat(name: str, repeat: int = 1):
+def greetings_name_repeat(
+  name: str,
+  repeat: int = 1
+):
   repeated = ("Hello %s " % (name)) * repeat
   return {
     "greetings": repeated.rstrip()
@@ -63,12 +69,39 @@ def create_user(user: User = Body(...)): # ! with Body(...) model is Required
   return user
 
 # Query Params (Validations)
+# * If two endpoints have the same path and query params, the first one will be used
 @app.get("/users/search")
 def search_users(
-  fullname: Optional[str] = Query(None, min_length=1, max_length=50, title="Full Name of the user", description="First name and Last name of the user"), 
-  age: int = Query(..., gt=0, lt=100, description="Age of the user") # ! (...) is Required (to test)
+  fullname: Optional[str] = Query(
+    None,
+    min_length = 1,
+    max_length = 50,
+    title = "Full Name of the user",
+    description = "This is the First name and Last name of the user. It's between 1 and 50 characters"
+  ), 
+  age: int = Query(
+    ...,
+    gt = 0,
+    lt = 100,
+    title = "Age of the user", # * Unsupported on Swagger UI, but works on Redoc
+    description = "This is the age of the user. It's required"
+  ) # ! (...) is Required (to test)
 ):
-  return { fullname: age}
+  return { fullname: age }
+
+# Path Params (Validations)
+@app.get("/users/{user_id}")
+def get_user(
+  user_id: int = Path(
+    ...,
+    gt = 0,
+    title = "ID of the user",
+    description = "This is the ID of the user. It's required"
+  )
+):
+  return {
+    "user_id": user_id
+  }
 
 # Run (with hot reloading)
 # uvicorn main:app --reload
