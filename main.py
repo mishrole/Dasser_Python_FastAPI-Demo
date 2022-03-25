@@ -31,19 +31,31 @@ class HairColor(Enum):
 class Location(BaseModel):
   city: str = Field(
     ...,
-    min_length=2,
-    title="City"
+    min_length = 2,
+    title = "City",
+    example = "Lima"
   )
   state: str = Field(
     ...,
-    min_length=2,
-    title="State"
+    min_length = 2,
+    title = "State",
+    example = "Lima"
   )
   country: str = Field(
     ...,
-    min_length=2,
-    title="Country"
+    min_length = 2,
+    title = "Country",
+    example = "Peru"
   )
+
+  # class Config:
+  #   schema_extra = {
+  #     "example": {
+  #       "city": "New York",
+  #       "state": "NY",
+  #       "country": "USA"
+  #     }
+  #   }
 
 class User(BaseModel):
   id : Optional[str] = uuid.uuid4()
@@ -75,6 +87,20 @@ class User(BaseModel):
   is_married : Optional[bool] = Field(default = None)
   site_url: HttpUrl = Field(default = None)
   email: EmailStr = Field(default = None)
+
+  class Config:
+    schema_extra = {
+      "example": {
+        "first_name": "Mitchell",
+        "last_name": "Rodríguez",
+        "age": 25,
+        "title": "Full-Stack Developer",
+        "hair_color": "black",
+        "is_married": False,
+        "site_url": "https://www.linkedin.com/in/mitchellrodriguez",
+        "email": "mishrole.dev@gmail.com"
+      }
+    }
 
 users = []
 
@@ -165,9 +191,10 @@ def update_user(
   user: User = Body(...),
   location: Location = Body(...)
 ):
-  # * Combine
   results = user.dict()
-  results.update(location.dict())
+  results["location"] = location.dict()
+  # * Combine
+  # results.update(location.dict())
   # ! Unsupported by FastAPI
   # user.dict() & location.dict()
   return results
