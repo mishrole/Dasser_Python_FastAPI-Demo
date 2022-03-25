@@ -29,9 +29,21 @@ class HairColor(Enum):
   gray = "gray"
 
 class Location(BaseModel):
-  city: str = Field(..., title="City")
-  state: str = Field(..., title="State")
-  country: str = Field(..., title="Country")
+  city: str = Field(
+    ...,
+    min_length=2,
+    title="City"
+  )
+  state: str = Field(
+    ...,
+    min_length=2,
+    title="State"
+  )
+  country: str = Field(
+    ...,
+    min_length=2,
+    title="Country"
+  )
 
 class User(BaseModel):
   id : Optional[str] = uuid.uuid4()
